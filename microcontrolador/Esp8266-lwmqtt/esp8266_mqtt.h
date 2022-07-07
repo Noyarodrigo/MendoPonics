@@ -28,7 +28,8 @@
 #include <CloudIoTCore.h>
 #include <CloudIoTCoreMqtt.h>
 #include "ciotc_config.h" // Wifi configuration here
-
+#include <ArduinoJson.h>
+#include "globals.h"
 
 // !!REPLACEME!!
 // The MQTT callback function for commands and configuration updates
@@ -37,10 +38,23 @@ void messageReceivedAdvanced(MQTTClient *client, char topic[], char bytes[], int
 {
   if (length > 0){
     Serial.printf("incoming: %s - %s\n", topic, bytes);
+    StaticJsonDocument<300> doc;   //Memory pool
+    auto error = deserializeJson(doc, bytes);
+    if (error) {
+      Serial.print(F("deserializeJson() failed with code "));
+      Serial.println(error.c_str());
+      return;
+    }
+    irrigation_interval = doc["pump_interval"];
+    irrigation_time_on = doc["pump_timeon"];
+    sunset = doc["sunset"];
+    sunrise = doc["sunrise"];
   } else {
     Serial.printf("0\n"); // Success but no message
   }
 }
+
+
 ///////////////////////////////
 
 // Initialize WiFi and MQTT for this board

@@ -73,33 +73,14 @@ BH1750 lightMeter;
 #define rele_bomba D5
 #define rele_luz D6
 
-//data conf
-int data_sampling_time = 30*60000; //minutes
-static unsigned long tm_data = 0; // sending data aux timer
-
-//irrigation conf
-int irrigation_interval = 30*60000;
-int irrigation_time_on = 15*60000; //how long will the pump be turned on
-static unsigned long tm_irrigation = 0; //irrigation aux timer
-bool irrigation_flag = false; //timer flag
-bool pump_status = false; //true -> pump on
-
-//luminaire conf
-int lum_expected_hrs = 10; //this is how many hours the plant should be exposed
-//it'll be taken from the suscription depending on the plant the user selected on the web
-//so for example if the user selected lettuce the configuration message would include 8hrs of light on it
-static unsigned long tm_luminary = 0; //luminary aux timer
-int lum_sampling_time = 1*60000; //minutes
-bool lum_flag = false; //func aux
-bool lum_status_on = false; //are the lights on? True:ON 
-bool lum_status_off = false; //are the lights on? True:ON 
-int sunrise = 8;
-
 //wifi led
 #define wifiled D7
 
 void setup(){
+ 
   Serial.begin(9600);
+  
+  delay(10000);
   pinMode(LED_BUILTIN, OUTPUT); //internal led to visualize data being sent
   pinMode(wifiled, OUTPUT);
   dht.begin(); //initialize ambience temperature and humidity sensor
@@ -113,7 +94,9 @@ void setup(){
   
   setupCloudIoT(); // Creates globals for MQTT
 
-  //relays conf
+  
+
+/*  //relays conf
   pinMode(rele_bomba,OUTPUT);
   pinMode(rele_luz,OUTPUT);
   digitalWrite(rele_bomba,HIGH);
@@ -127,23 +110,13 @@ void setup(){
   digitalWrite(rele_bomba,HIGH);
   delay(5000);
   digitalWrite(rele_luz,HIGH);
+  */
   
-  time_t now;
-  struct tm * timeinfo;
-  time(&now);
-  timeinfo = localtime(&now);
-  int time_hr = timeinfo->tm_hour;
-  Serial.print("Hora actual:");
-  Serial.println(time_hr);
-  Serial.print("Amanecer:");
-  Serial.println(sunrise);
-  Serial.print("Atardecer:");
-  Serial.println(sunrise+lum_expected_hrs);
-  Serial.println("");
   Serial.println("Setup complete");
 
 }
 
+String conf_subfolder = "/conf";
 void loop(){
   if (!mqtt->loop())
   {
@@ -155,21 +128,35 @@ void loop(){
   if (millis() - tm_data > data_sampling_time)
   {
     tm_data = millis();
-    send_data();
+
+    /*    
+    String payload = String("{\"timestamp\":") + time(nullptr) +
+                       String(",\"deviceid\":\"") + device_id +
+                       String("\",\"priority\":") + 0 +
+                       String(",\"message\":\"") + "Relays failed" +
+                       String("\",\"email\":") + email +
+                       String("}");
+    Serial.print("publicando: ");
+    Serial.println(payload);
+    publishTelemetry("/alerts",payload);
+    */
+    
+    
+    //send_data();
   }
 
   //irrigation sequence
   if (millis() - tm_irrigation > irrigation_interval)
   {
     tm_irrigation = millis();
-    irrigation_flag = true; //if the flag is set to true, irrigation control func will turn on the pump
+    //irrigation_flag = true; //if the flag is set to true, irrigation control func will turn on the pump
   }
 
   //luminaire sequence
   if (millis() - tm_luminary > lum_sampling_time)
   {
     tm_luminary = millis();
-    lum_flag = true;
+    //lum_flag = true;
   }
   
   irrigation_control();
@@ -252,7 +239,7 @@ void luminaire_control(){
     //sunrise = 8am
     //expected = 10hrs
     //interval -> [8,8+10] -> [8,18]
-    if (time_hr > sunrise && time_hr < (sunrise+lum_expected_hrs)){
+    if (time_hr > sunrise && time_hr < sunset){
       Serial.println("Verificando luces, dentro del intervalo");
       if (lum_status_on == false){
         digitalWrite(rele_luz,LOW); //LOW -> ON      

@@ -1,18 +1,22 @@
 from google.cloud import bigquery
+from google.cloud import iot_v1
 from datetime import datetime
 import base64, json, sys, os
 
-def pubsub_to_bigq(event, context):
+
+def alert_handler(event, context):
     if event['data'] is None:
         print('Invalid data received: {}'.format(event))
         return
 
-    device_id = event['attributes']['deviceId']
+    attributes = event['attributes']
+
     json_data = base64.b64decode(event['data']).decode('utf-8')
 
     to_bigquery(os.environ['dataset'], os.environ['table'], json.loads(json_data))
 
 def to_bigquery(dataset, table, document):
+   print("Saving alert")
    bigquery_client = bigquery.Client()
    dataset_ref = bigquery_client.dataset(dataset)
    table_ref = dataset_ref.table(table)
