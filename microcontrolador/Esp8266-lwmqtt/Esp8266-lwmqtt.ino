@@ -76,6 +76,9 @@ BH1750 lightMeter;
 //wifi led
 #define wifiled D7
 
+bool flow_check();
+
+
 void setup(){
  
   Serial.begin(9600);
@@ -94,83 +97,73 @@ void setup(){
   
   setupCloudIoT(); // Creates globals for MQTT
 
-  
-
-/*  //relays conf
+  //relays conf
   pinMode(rele_bomba,OUTPUT);
   pinMode(rele_luz,OUTPUT);
   digitalWrite(rele_bomba,HIGH);
   digitalWrite(rele_luz,HIGH);
 
-  delay(5000);
-  digitalWrite(rele_bomba,LOW);
-  delay(5000);
-  digitalWrite(rele_luz,LOW);
-  delay(5000);
-  digitalWrite(rele_bomba,HIGH);
-  delay(5000);
-  digitalWrite(rele_luz,HIGH);
+  /*
+  alerts logic
+  the test n1 is on the msgrecieved func on wap8266_mqtt.h
+    1- check if the device got a configuration, if it didn't send an alert (on the topic) and stop the microcontroler (enabled flag -> false)
+    2- check pump relay: starts the pump and reads de flow sensor, if there's no flow then send an alert (topic) and stop de microcontroler.
+    3- visual check for the user as the next sequence shows, the user just need to watch if the lights and pump turn on
   */
-  
+   
+  delay(2000);
+  digitalWrite(rele_luz,LOW);
+  delay(2000);
+  digitalWrite(rele_luz,HIGH);
+  delay(1000);
+  digitalWrite(rele_bomba,LOW);
+  delay(2000);
+  digitalWrite(rele_bomba,HIGH);
+    
   Serial.println("Setup complete");
 
 }
 
-String conf_subfolder = "/conf";
 void loop(){
+  
   if (!mqtt->loop())
   {
     mqtt->mqttConnect();
   }
   delay(10); // <- fixes some issues with WiFi stability
-
-  //data sequence
-  if (millis() - tm_data > data_sampling_time)
-  {
-    tm_data = millis();
-
-    /*    
-    String payload = String("{\"timestamp\":") + time(nullptr) +
-                       String(",\"deviceid\":\"") + device_id +
-                       String("\",\"priority\":") + 0 +
-                       String(",\"message\":\"") + "Relays failed" +
-                       String("\",\"email\":") + email +
-                       String("}");
-    Serial.print("publicando: ");
-    Serial.println(payload);
-    publishTelemetry("/alerts",payload);
-    */
-    
-    
-    //send_data();
-  }
-
-  //irrigation sequence
-  if (millis() - tm_irrigation > irrigation_interval)
-  {
-    tm_irrigation = millis();
-    //irrigation_flag = true; //if the flag is set to true, irrigation control func will turn on the pump
-  }
-
-  //luminaire sequence
-  if (millis() - tm_luminary > lum_sampling_time)
-  {
-    tm_luminary = millis();
-    //lum_flag = true;
-  }
   
-  irrigation_control();
-  luminaire_control();
-
-  //check connection
-  if (WiFi.isConnected()){
-    digitalWrite(wifiled,HIGH);
-  }else{
-    digitalWrite(wifiled,LOW);
-    Serial.println("Restarting WiFi");
-    setupWifi();
+  if (enabled == true){
+    //data sequence
+    if (millis() - tm_data > data_sampling_time){
+      tm_data = millis();
+      //send_data();
+    }
+  
+    //irrigation sequence
+    if (millis() - tm_irrigation > irrigation_interval){
+      tm_irrigation = millis();
+      //irrigation_flag = true; //if the flag is set to true, irrigation control func will turn on the pump
+    }
+  
+    //luminaire sequence
+    if (millis() - tm_luminary > lum_sampling_time){
+      tm_luminary = millis();
+      //lum_flag = true;
+    }
+    irrigation_flag = true;
+    irrigation_control();
+    luminaire_control();
+  
+    //check connection
+    if (WiFi.isConnected()){
+      digitalWrite(wifiled,HIGH);
+    }else{
+      digitalWrite(wifiled,LOW);
+      Serial.println("Restarting WiFi");
+      setupWifi();
+    }
   }
- }
+}
 
 void send_data(){
   //get sensor data
@@ -194,11 +187,19 @@ void send_data(){
 }
 
 void irrigation_control(){
-  if (irrigation_flag){
-    if (pump_status == false){
+  if (irrigation_flag){ //timer flag if it's true then waiting time has finished
+    if (pump_status == false){ //false -> pump is off, if it's off then turn on
       digitalWrite(rele_bomba,LOW); //LOW -> ON  
-      pump_status = true;
+      pump_status = true; 
       Serial.println("Pump: ON");
+      
+      flow_status = flow_check(); //function to check if there's flow when the pump is on
+      if (flow_status == false){ //false means that there's no flow -> turn the pump off and send the alert
+        digitalWrite(rele_bomba,HIGH);  //HIGH -> OFF
+        pump_status = false;
+        Serial.println("ALERT (Pump: OFF)");
+        return;
+      }
       
       //format the message to send it over MQTT and iot core library (Google)
       String payload = String("{\"timestamp\":") + time(nullptr) +
@@ -276,5 +277,22 @@ void luminaire_control(){
     }
     lum_flag = false;
   }
+
+bool flow_check(){
+  if (pump_status){ //true -> pump: ON
+    send_alert("no_flow_err",3);
+    enabled = false;
+    return false;
+    /*if theres flow
+        print pump ok
+        enabled = true;
+        return true;
+      else
+        send_alert("no_flow_err",3);
+        enabled = false;
+        return false;
+    */
+  }
+}
 
 #endif

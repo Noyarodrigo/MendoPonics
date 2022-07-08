@@ -31,6 +31,22 @@
 #include <ArduinoJson.h>
 #include "globals.h"
 
+bool publishTelemetry(String, String);
+
+void send_alert(String msg, int priority){
+   String payload = String("{\"timestamp\":") + time(nullptr) +
+                       String(",\"deviceid\":\"") + device_id +
+                       String("\",\"priority\":") + priority +
+                       String(",\"message\":\"") + msg +
+                       String("\",\"email\":") + email +
+                       String("}");
+    Serial.print("publicando alerta: ");
+    Serial.println(payload);
+    publishTelemetry("/alerts",payload);
+    
+}
+
+
 // !!REPLACEME!!
 // The MQTT callback function for commands and configuration updates
 // Place your message handler code here.
@@ -49,10 +65,21 @@ void messageReceivedAdvanced(MQTTClient *client, char topic[], char bytes[], int
     irrigation_time_on = doc["pump_timeon"];
     sunset = doc["sunset"];
     sunrise = doc["sunrise"];
+     //check message recieved comparing with the saved values (-1 in all cases)
+    if (irrigation_interval != -1 and irrigation_time_on != -1 and sunset != -1 and sunrise != -1){
+      Serial.println("Variables configured, enabling device");
+      enabled = true;
+    }else{
+      Serial.println("Error in the configuration, sending alert");
+      send_alert("get_conf_err",3);
+      enabled = false;
+    }
   } else {
     Serial.printf("0\n"); // Success but no message
   }
 }
+
+
 
 
 ///////////////////////////////
