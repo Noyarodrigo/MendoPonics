@@ -1,0 +1,18 @@
+
+#base image
+FROM python:3.8-slim
+
+RUN apt-get update -y && apt-get upgrade python3-pip -y
+RUN python3 -m pip install --upgrade pip
+RUN pip3 install --upgrade setuptools
+
+WORKDIR /app/src
+
+COPY ./ ./
+EXPOSE 8000
+
+RUN pip3 install --upgrade pip
+RUN pip3 --no-cache-dir install -r requirements.txt
+
+#CMD ["gunicorn", "-w", "3", "-b", ":8000", "-t", "360", "--reload", "wsgi:app"]
+CMD ["python", "app.py"]

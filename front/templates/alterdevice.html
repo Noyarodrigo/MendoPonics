@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1 class="title">
+  Configuration panel
+</h1>
+<h3 class="title">
+  Device: {{data['deviceid']}} 
+</h3>
+    <form method="POST" action="{{url_for('user_handler')}}">
+	<label for="sunrise">Sunrise:</label><br>
+	<input type="text" id="sunrise" name="sunrise" value= "{{data['sunrise']}}" ><br>
+	<label for="sunset">Sunset:</label><br>
+	<input type="text" id="sunset" name="sunset" value= "{{data['sunset']}}"><br>
+	<label for="pump_interval">Pump Interval:</label><br>
+	<input type="text" id="pump_interval" name="pump_interval" value= "{{data['pump_interval']}}"><br>
+	<label for="pump_timeon">Pump Time ON:</label><br>
+	<input type="text" id="pump_timeon" name="pump_timeon" value= "{{data['pump_timeon']}}"><br>
+	<label for="description">Description:</label><br>
+	<input type="text" id="description" name="description" value= "{{data['description']}}"><br>
+	<br>
+	<input type=hidden value="{{data['deviceid']}}" name="deviceid"/>
+	<input type=hidden value="{{data['location']}}" name="location"/>
+	<input type=hidden value="{{data['registry']}}" name="registry"/>
+ 	<input type="submit" value="Update" name="Update"/>
+</form>
+{% endblock %}

@@ -1,2 +1,8 @@
 /access-keys
+/front/lib
+/front/config
+/front/bin
+/front/.env
+*.pyc
+*.cfg
 *.json
