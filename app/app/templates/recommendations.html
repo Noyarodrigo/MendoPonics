@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1 class="title">
+  Recommendations
+</h1>
+
+<h3 class="title">
+  For device: {{data['deviceid']}}
+</h3>
+
+<table class="table-fill">
+<thead>
+  <tr>
+    <td class="text-left">pH:</td>
+    <td class="text-left">{{data['ph']}}</td>
+  </tr>
+  <tr>
+    <td class="text-left">EC:</td>
+    <td class="text-left">{{data['ec']}}</td>
+  </tr>
+</tbody>
+</table>
+{% endblock %}

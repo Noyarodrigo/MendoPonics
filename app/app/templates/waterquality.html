@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1 class="title">
+  Water Quality verification
+</h1>
+<h3 class="title">
+  Device: {{data}}
+</h3>
+    <form method="POST" action="{{url_for('waterquality')}}">
+	<label for="ph">pH:</label><br>
+	<input type="text" id="ph" name="ph" placeholder= "pH measurement"><br>
+	<label for="ppm">PPM:</label><br>
+	<input type="text" id="ppm" name="ppm" placeholder= "nutrients measurement"><br>
+	<label for="vegetables">Vegetable:</label>
+	<br>
+	<select name="vegetables" id="vegetables">
+	  <option value="Pepper">Pepper</option>
+	  <option value="Tomato">Tomato</option>
+	  <option value="Lettuce">Lettuce</option>
+	  <option value="Spinach">Spinach</option>
+	</select>
+	<input type=hidden value="{{data}}" name="deviceid"/>
+	<br>
+ 	<input type="submit" value="Check" name="Check"/>
+</form>
+{% endblock %}

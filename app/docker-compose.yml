@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+
+  front:
+    build: ./app/
+    environment:
+      PYTHONUNBUFFERED: 1 #this is for python stdout to be printed, or use python -u .py
+      FLASK_APP: app
+      PORT: 8000
+    restart: unless-stopped
+    volumes:
+      - ./config:/app/src/config
+    ports:
+      - 8000:8000
+
+  email:
+    build: ./email/
+    environment:
+      PYTHONUNBUFFERED: 1 #this is for python stdout to be printed, or use python -u .py
+      project_id: mendoponics 
+      subscription_id: alerts
+      fromaddr: mendoponics@gmail.com
+      password: dwzgslupulbhixqb
+    restart: unless-stopped
+    volumes:
+      - ./config:/app/src/config

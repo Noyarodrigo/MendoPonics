@@ -122,6 +122,9 @@ void setup(){
     
   Serial.println("Setup complete");
 
+  
+  
+  
 }
 
 void loop(){
@@ -132,6 +135,11 @@ void loop(){
   }
   delay(10); // <- fixes some issues with WiFi stability
   
+//borrar esto, es para probar las alertas
+delay(10000);
+send_alert("no_flow_err",3);
+
+  //enabled var is in globals.h
   if (enabled == true){
     //data sequence
     if (millis() - tm_data > data_sampling_time){
@@ -150,7 +158,7 @@ void loop(){
       tm_luminary = millis();
       //lum_flag = true;
     }
-    irrigation_flag = true;
+    //irrigation_flag = true;
     irrigation_control();
     luminaire_control();
   

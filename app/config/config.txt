@@ -1,0 +1,2 @@
+SECRET_KEY = 'jWwf6VHLTikkrBgrbVyK'
+GOOGLE_CLIENT_ID = "464119872750-j1kfu7tigt06n1k3bus1d93d6mgpqrm1.apps.googleusercontent.com"
