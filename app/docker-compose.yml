@@ -18,10 +18,10 @@ services:
     build: ./email/
     environment:
       PYTHONUNBUFFERED: 1 #this is for python stdout to be printed, or use python -u .py
-      project_id: mendoponics 
-      subscription_id: alerts
-      fromaddr: mendoponics@gmail.com
-      password: dwzgslupulbhixqb
+      project_id: 
+      subscription_id: 
+      fromaddr: 
+      password: 
     restart: unless-stopped
     volumes:
       - ./config:/app/src/config
