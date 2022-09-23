@@ -210,9 +210,9 @@ def recommendations(data):
     ec = ppm / 0.7
     optimal_ec = vegetables[data_dict['vegetables']]
     if ec < optimal_ec:
-        response['ec'] = 'Too Low, optimal value is: ' + str(round(optimal_ec*0.7)) + '. Add nutrients'
+        response['ec'] = 'Too Low, optimal value is: ' + str(round(optimal_ec*0.7)) + ' ppm. Add nutrients'
     elif ec > optimal_ec:
-        response['ec'] = 'Too High, optimal value is: ' + str(round(optimal_ec*0.7)) + '. Add water'
+        response['ec'] = 'Too High, optimal value is: ' + str(round(optimal_ec*0.7)) + 'ppm. Add water'
 
     return render_template('recommendations.html',data=response)
 
