@@ -1,8 +1,6 @@
 resource "google_bigquery_dataset" "main" {
   dataset_id                   = "main"
   location                     = "US"
-  default_table_expiration_ms  = "3600000"
-  default_partition_expiration_ms = "86400000"
 }
 
 resource "google_bigquery_table" "alerts" {
