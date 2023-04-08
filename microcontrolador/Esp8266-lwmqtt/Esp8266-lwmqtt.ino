@@ -137,7 +137,7 @@ void loop(){
   
 //borrar esto, es para probar las alertas
 delay(10000);
-send_alert("no_flow_err",3);
+//send_alert("no_flow_err",3);
 
   //enabled var is in globals.h
   if (enabled == true){
