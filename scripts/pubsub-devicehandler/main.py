@@ -35,11 +35,11 @@ def conf_device(attributes):
     print('attr: ', attributes)
     print(f"Device {attributes['deviceId']} connected, sending configuration")
     client = iot_v1.DeviceManagerClient()
-    device_path = client.device_path('mendoponics',attributes['deviceRegistryLocation'], attributes['deviceRegistryId'], attributes['deviceId'])
+    device_path = client.device_path('mendoponics-383115',attributes['deviceRegistryLocation'], attributes['deviceRegistryId'], attributes['deviceId'])
 
     bq_client = bigquery.Client()
 
-    query = "SELECT * FROM `mendoponics.main.configurations`\
+    query = "SELECT * FROM `mendoponics-383115.main.configurations`\
             WHERE deviceid = '"+ str(attributes['deviceId']) + \
             "' LIMIT 1"
     query_job = bq_client.query(query)  # Make an API request.

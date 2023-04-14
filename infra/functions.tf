@@ -44,3 +44,48 @@ resource "google_cloudfunctions_function" "alert_handler" {
     }
   }
 }
+
+resource "google_cloudfunctions_function" "pump_handler" {
+  name        = "pump_handler"
+  description = "Function triggered by Pub/Sub topic 'pump' for actuators management"
+  runtime     = "python37"
+  entry_point = "actuator_handler"
+  available_memory_mb = 128
+  source_archive_bucket = "functions_mendoponics"
+  source_archive_object = "pubsub-actuatorhandler.zip"
+
+ environment_variables = {
+    dataset = "main"
+  }
+
+  event_trigger {
+    event_type = "google.pubsub.topic.publish"
+    resource = "projects/mendoponics-383115/topics/pump"
+    failure_policy {
+      retry = false
+    }
+  }
+
+}
+resource "google_cloudfunctions_function" "light_handler" {
+  name        = "light_handler"
+  description = "Function triggered by Pub/Sub topic 'light' for actuators management"
+  runtime     = "python37"
+  entry_point = "actuator_handler"
+  available_memory_mb = 128
+  source_archive_bucket = "functions_mendoponics"
+  source_archive_object = "pubsub-actuatorhandler.zip"
+
+ environment_variables = {
+    dataset = "main"
+  }
+
+  event_trigger {
+    event_type = "google.pubsub.topic.publish"
+    resource = "projects/mendoponics-383115/topics/light"
+    failure_policy {
+      retry = false
+    }
+  }
+
+}

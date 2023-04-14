@@ -11,3 +11,4 @@
 *.zip
 *.tfstate.backup
 *.tfstate
+*.pem

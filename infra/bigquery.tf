@@ -29,7 +29,10 @@ resource "google_bigquery_table" "configurations" {
   {"name": "sunrise", "type": "INTEGER", "mode": "REQUIRED"},
   {"name": "sunset", "type": "INTEGER", "mode": "REQUIRED"},
   {"name": "pump_interval", "type": "INTEGER", "mode": "REQUIRED"},
-  {"name": "pump_timeon", "type": "INTEGER", "mode": "REQUIRED"}
+  {"name": "pump_timeon", "type": "INTEGER", "mode": "REQUIRED"},
+  {"name": "description", "type": "STRING", "mode": "REQUIRED"},
+  {"name": "location", "type": "STRING", "mode": "REQUIRED"},
+  {"name": "registry", "type": "STRING", "mode": "REQUIRED"}
 ]
 SCHEMA
 }
@@ -41,7 +44,7 @@ resource "google_bigquery_table" "devices" {
   schema = <<SCHEMA
 [
   {"name": "deviceid", "type": "STRING", "mode": "REQUIRED"},
-  {"name": "email", "type": "STRING", "mode": "REQUIRED"}
+  {"name": "owner", "type": "STRING", "mode": "REQUIRED"}
 ]
 SCHEMA
 }
@@ -75,4 +78,47 @@ resource "google_bigquery_table" "waterquality" {
   {"name": "ppm", "type": "FLOAT", "mode": "REQUIRED"}
 ]
 SCHEMA
+}
+resource "google_bigquery_table" "pumpstatus" {
+  dataset_id = google_bigquery_dataset.main.dataset_id
+  table_id   = "pumpstatus"
+
+  schema = <<EOF
+[
+  {
+    "name": "timestamp",
+    "type": "TIMESTAMP"
+  },
+  {
+    "name": "email",
+    "type": "STRING"
+  },
+  {
+    "name": "pump",
+    "type": "INTEGER"
+  }
+]
+EOF
+}
+
+resource "google_bigquery_table" "lightstatus" {
+  dataset_id = google_bigquery_dataset.main.dataset_id
+  table_id   = "lightstatus"
+
+  schema = <<EOF
+[
+  {
+    "name": "timestamp",
+    "type": "TIMESTAMP"
+  },
+  {
+    "name": "email",
+    "type": "STRING"
+  },
+  {
+    "name": "light",
+    "type": "INTEGER"
+  }
+]
+EOF
 }
