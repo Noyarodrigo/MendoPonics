@@ -12,20 +12,6 @@ def actuator_handler(event, context):
     attributes = event['attributes']
 
     json_data = base64.b64decode(event['data']).decode('utf-8')
-    
-    """
-
-      String payload = String("{\"timestamp\":") + time(nullptr) +
-                   String(",\"email\":") + email +
-                   String(",\"pump\":") + 0 +
-                   String("}");
-      Serial.println("publicando: ");
-
-        String payload = String("{\"timestamp\":") + time(nullptr) +
-                     String(",\"email\":") + email +
-                     String(",\"estadoluces\":") + 1 +
-                   String("}");
-   """
 
     if "pump" in json_data:
         #tabla hardcodeada

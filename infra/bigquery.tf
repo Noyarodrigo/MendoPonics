@@ -60,7 +60,8 @@ resource "google_bigquery_table" "measurements" {
   {"name": "luz", "type": "FLOAT", "mode": "NULLABLE"},
   {"name": "tmpagua", "type": "FLOAT", "mode": "NULLABLE"},
   {"name": "timestamp", "type": "TIMESTAMP", "mode": "REQUIRED"},
-  {"name": "email", "type": "STRING", "mode": "REQUIRED"}
+  {"name": "email", "type": "STRING", "mode": "REQUIRED"},
+  {"name": "deviceid", "type": "STRING", "mode": "REQUIRED"}
 ]
 SCHEMA
 }
@@ -96,7 +97,9 @@ resource "google_bigquery_table" "pumpstatus" {
   {
     "name": "pump",
     "type": "INTEGER"
-  }
+  },
+
+  {"name": "deviceid", "type": "STRING", "mode": "REQUIRED"}
 ]
 EOF
 }
@@ -118,7 +121,8 @@ resource "google_bigquery_table" "lightstatus" {
   {
     "name": "light",
     "type": "INTEGER"
-  }
+  },
+  {"name": "deviceid", "type": "STRING", "mode": "REQUIRED"}
 ]
 EOF
 }
